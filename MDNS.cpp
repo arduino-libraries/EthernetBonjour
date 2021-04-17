@@ -240,8 +240,8 @@ int MDNS::startDiscoveringService(const char* serviceName,
                                                   unsigned long timeout)
 {   
    this->stopDiscoveringService();
-   
-   char* n = (char*)my_malloc(strlen(serviceName) + 13);
+
+   char* n = (char*)my_malloc(strlen(serviceName));
    if (NULL == n)
       return 0;
    
@@ -322,9 +322,6 @@ MDNSError_t MDNS::_sendMDNSMessage(uint32_t /*peerAddress*/, uint32_t xid, int t
          dnsHeader->queryResponse = 1;
          break;
    }
-
-
-
 
    this->_udp->beginPacket(mdnsMulticastIPAddr,MDNS_SERVER_PORT);
    this->_udp->write((uint8_t*)dnsHeader,sizeof(DNSHeader_t));
@@ -456,9 +453,10 @@ MDNSError_t MDNS::_sendMDNSMessage(uint32_t /*peerAddress*/, uint32_t xid, int t
          buf[1] = (type == MDNSPacketTypeServiceQuery) ? 0x0c : 0x01; 
          buf[3] = 0x1;
 
-         this->_udp->write((uint8_t*)buf, sizeof(DNSHeader_t));
-         ptr += sizeof(DNSHeader_t);
-         
+          this->_udp->write((uint8_t*)buf, 4);
+//          ptr += sizeof(DNSHeader_t);
+          ptr += 4;
+
          this->_resolveLastSendMillis[(type == MDNSPacketTypeServiceQuery) ? 1 : 0] = millis();
          
          break;
@@ -1253,8 +1251,11 @@ void MDNS::removeAllServiceRecords()
       this->_removeServiceRecord(i);
 }
 
-void MDNS::_writeDNSName(const uint8_t* name, uint16_t* pPtr,
-                                         uint8_t* buf, int bufSize, int zeroTerminate)
+void MDNS::_writeDNSName(const uint8_t* name,
+                         uint16_t* pPtr,
+                         uint8_t* buf,
+                         int bufSize,
+                         int zeroTerminate)
 {
    uint16_t ptr = *pPtr;
    uint8_t* p1 = (uint8_t*)name, *p2, *p3;
