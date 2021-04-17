@@ -774,10 +774,10 @@ MDNSError_t MDNS::_processMDNSQuery()
                            if (!recordsFound[j] && servMatches[j] && servNames[j])
                               servMatches[j] &= this->_matchStringPart(&servNames[j], &servLens[j],
                                                                        buf, ir);
-                              if (!partMatched[j])
-                                 partMatched[j] = servMatches[j];
-                              
-                              lastWasCompressed[j] = 0;
+                           if (!partMatched[j])
+                              partMatched[j] = servMatches[j];
+        
+                           lastWasCompressed[j] = 0;
                         }               
                         
                         for (j=0; j<MDNS_MAX_SERVICES_PER_PACKET; j++) {
